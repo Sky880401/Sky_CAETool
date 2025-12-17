@@ -3,7 +3,7 @@ import sys
 import os
 
 # 設定 V1 模組路徑 (請依實際狀況修改)
-MODULE_PATH = r"D:\\Sky_CAETool\\V1"
+MODULE_PATH = r"D:\Sky_CAETool\V1"
 if MODULE_PATH not in sys.path:
     sys.path.append(MODULE_PATH)
 
