@@ -60,11 +60,7 @@ class ZFaceSelectorTool(object):
             print("[ZFace] 已建立: {} ({} Faces)".format(name, len(ids)))
 
 # ContactTool_V1.py 範例結構
-def runZFaceSelector(ext_api, model=None, transaction_cls=None, selection_mgr=None, friction=0.2):
+def runZFaceSelector(ext_api, model=None, transaction_cls=None, selection_mgr=None):
     # 如果 caller 沒傳進來，再嘗試用全域變數 (Backward Compatibility)
     # 但在這個新架構下，caller (main.py) 一定會傳
     model = model if model else ext_api.DataModel.Project.Model
-    
-    # 初始化工具類別
-    tool = ContactTool(ext_api, model, transaction_cls, selection_mgr)
-    tool.run_contact(friction)

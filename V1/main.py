@@ -10,14 +10,13 @@ if MODULE_PATH not in sys.path:
     sys.path.append(MODULE_PATH)
 
 # ==========================================
-# 2. 匯入模組 (使用 from ... import ... as ...)
+# 2. 匯入模組 (使用 from ... import ...)
 # ==========================================
-# 使用 'as' 取別名，避免多個模組的 run 函式名稱衝突
 # 注意：若您在開發階段修改了 .py 檔，這種 import 方式不會自動 reload。
 # 若需 reload，建議重啟 Console 或使用 importlib。
 
 from ZFaceSelector_V1 import runZFaceSelector
-# from ContactTool_V1   import run as runContact
+from ContactTool_V1   import runContact
 # from Mesh_V1          import run as runMesh
 # from BC_V1            import run as runBC
 # from Solver_V1        import run as runSolver
@@ -29,8 +28,8 @@ from ZFaceSelector_V1 import runZFaceSelector
 # 幾何篩選
 Z_TOLERANCE = 0.001
 
-# # 接觸
-# FRICTION = 0.2
+# 接觸
+Friction_coeff = 0.2
 
 # # 網格
 # MESH_SIZE = 3.0       # mm
@@ -64,14 +63,21 @@ try:
 
     # # --- STEP 2: Contact Tool ---
     # print("\n>>> [2/6] 執行 ContactTool...")
-    # # 傳入：ExtAPI, Model, Transaction, SelectionManager
-    # runContact(
-    #     ExtAPI,
-    #     model=Model,
-    #     transaction_cls=Transaction,
-    #     selection_mgr=ExtAPI.SelectionManager,
-    #     friction=FRICTION
-    # )
+    runContact(
+    ExtAPI,
+    model=Model,
+    transaction_cls=Transaction,
+    selection_type_enum=SelectionTypeEnum,
+    
+    # [關鍵修改] 傳入必要的列舉 (Enum)，讓模組能識別資料夾與接觸類型
+    data_model_object_category=DataModelObjectCategory,
+    contact_type=ContactType,
+    
+    # 設定參數
+    friction_coeff=Friction_coeff,            # 摩擦係數
+    delete_existing_groups=True,   # 是否先刪除舊的接觸群組
+    contact_name_typo_is_conatct=False # 是否處理 "Conatct" 拼字問題
+    )
 
     # # --- STEP 3: Mesh Tool ---
     # print("\n>>> [3/6] 執行 Mesh...")
