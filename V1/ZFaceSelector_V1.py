@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 class ZFaceSelectorTool(object):
-    def __init__(self, api, model, transaction_cls, selection_type_enum):
-        self.api = api
-        self.model = model
+    def __init__(self, ext_api, model=None, transaction_cls=None, selection_type_enum=None):
+        self.api = ext_api
+        self.model = model if model is not None else ext_api.DataModel.Project.Model
         self.transaction_cls = transaction_cls
         self.st_enum = selection_type_enum
-        self.geo_data = api.DataModel.GeoData
+        self.geo_data = ext_api.DataModel.GeoData
 
     def run_selection(self, tolerance=0.001):
         # 1. 取得 Z 軸極值
@@ -59,6 +59,12 @@ class ZFaceSelectorTool(object):
             new_ns.Location = sel
             print("[ZFace] 已建立: {} ({} Faces)".format(name, len(ids)))
 
-def run(api, model, transaction_cls, selection_type_enum, tolerance=0.001):
-    tool = ZFaceSelectorTool(api, model, transaction_cls, selection_type_enum)
-    tool.run_selection(tolerance)
+# ContactTool_V1.py 範例結構
+def runZFaceSelector(ext_api, model=None, transaction_cls=None, selection_mgr=None, friction=0.2):
+    # 如果 caller 沒傳進來，再嘗試用全域變數 (Backward Compatibility)
+    # 但在這個新架構下，caller (main.py) 一定會傳
+    model = model if model else ext_api.DataModel.Project.Model
+    
+    # 初始化工具類別
+    tool = ContactTool(ext_api, model, transaction_cls, selection_mgr)
+    tool.run_contact(friction)

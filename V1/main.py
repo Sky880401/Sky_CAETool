@@ -1,100 +1,124 @@
 # -*- coding: utf-8 -*-
 import sys
-import os
 
-# 設定 V1 模組路徑 (請依實際狀況修改)
+# ==========================================
+# 1. 設定模組路徑
+# ==========================================
+# 請修改為您實際存放 .py 檔案的路徑
 MODULE_PATH = r"D:\Sky_CAETool\V1"
 if MODULE_PATH not in sys.path:
     sys.path.append(MODULE_PATH)
 
-# 匯入所有 Worker 模組
-import ZFaceSelector_V1
-# import ContactTool_V1
-# import Mesh_V1
-# import BC_V1
-# import Solver_V1
-# import Post_V1
+# ==========================================
+# 2. 匯入模組 (使用 from ... import ... as ...)
+# ==========================================
+# 使用 'as' 取別名，避免多個模組的 run 函式名稱衝突
+# 注意：若您在開發階段修改了 .py 檔，這種 import 方式不會自動 reload。
+# 若需 reload，建議重啟 Console 或使用 importlib。
 
-# 開發模式：強制 Reload 避免 Cache
-reload(ZFaceSelector_V1)
-# reload(ContactTool_V1)
-# reload(Mesh_V1)
-# reload(BC_V1)
-# reload(Solver_V1)
-# reload(Post_V1)
+from ZFaceSelector_V1 import runZFaceSelector
+# from ContactTool_V1   import run as runContact
+# from Mesh_V1          import run as runMesh
+# from BC_V1            import run as runBC
+# from Solver_V1        import run as runSolver
+# from Post_V1          import run as runPost
 
 # ==========================================
-# 使用者參數定義 (User Inputs)
+# 3. 參數定義 (User Inputs)
 # ==========================================
-# 1. 幾何篩選
+# 幾何篩選
 Z_TOLERANCE = 0.001
 
-# 2. 接觸
+# # 接觸
 # FRICTION = 0.2
 
-# 3. 網格
+# # 網格
 # MESH_SIZE = 3.0       # mm
 # IS_QUAD = True
 # REFINE = 0.5
 
-# 4. 邊界條件 (依賴步驟 1 的結果)
-# Z_DISP_MAG = 5.0      # mm (絕對值)
-# Z_DIR_SIGN = -1.0     # -1 代表向下
+# # 邊界條件
+# Z_DISP_MAG = 5.0      # mm
+# Z_DIR_SIGN = -1.0     # 向下
 
-# 5. 求解
+# # 求解
 # CORES = 6
-# TIME_STEPS = (0.05, 1e-4, 0.1) # Init, Min, Max
+# TIME_STEPS = (0.05, 1e-4, 0.1)
 
 # ==========================================
-# 主流程執行 (Sequential Execution)
+# 4. 執行流程 (依賴注入)
 # ==========================================
-def main_workflow():
-    print("=== Sky CAE Tool V1 自動化流程啟動 ===")
-    
-    # STEP 1: Z Face Selector (產出 NS 供 BC 使用)
+print("=== Sky CAE Tool V1 自動化流程啟動 ===")
+
+try:
+    # --- STEP 1: Z Face Selector ---
     print("\n>>> [1/6] 執行 ZFaceSelector...")
-    ZFaceSelector_V1.run(
-        ExtAPI, Model, Transaction, SelectionTypeEnum, 
-        tolerance=Z_TOLERANCE
+    # 傳入：ExtAPI, Model, Transaction, SelectionTypeEnum
+    runZFaceSelector(
+        ExtAPI,
+        tolerance=Z_TOLERANCE,
+        model=Model,
+        transaction_cls=Transaction,
+        selection_type_enum=SelectionTypeEnum
     )
-    
-    # STEP 2: Contact Tool (產出 Contact Region 供 Mesh Sizing 使用)
+
+    # # --- STEP 2: Contact Tool ---
     # print("\n>>> [2/6] 執行 ContactTool...")
-    # ContactTool_V1.run(
-    #     ExtAPI, Model, Transaction, ExtAPI.SelectionManager, 
+    # # 傳入：ExtAPI, Model, Transaction, SelectionManager
+    # runContact(
+    #     ExtAPI,
+    #     model=Model,
+    #     transaction_cls=Transaction,
+    #     selection_mgr=ExtAPI.SelectionManager,
     #     friction=FRICTION
     # )
-    
-    # STEP 3: Mesh (依賴 Geometry 與 Contact)
-    # print("\n>>> [3/6] 執行 Mesh...")
-    # Mesh_V1.run(
-    #     ExtAPI, Model, Transaction, ExtAPI.SelectionManager,
-    #     size=MESH_SIZE, is_quad=IS_QUAD, refine_factor=REFINE
-    # )
-    
-    # STEP 4: BC (依賴 ZFaceSelector 的 NS)
-    # print("\n>>> [4/6] 執行 BC...")
-    # BC_V1.run(
-    #     ExtAPI, Model, Transaction, 
-    #     z_val=Z_DISP_MAG, direction=Z_DIR_SIGN
-    # )
-    
-    # STEP 5: Solver Setup
-    # print("\n>>> [5/6] 執行 Solver 設定...")
-    # Solver_V1.run(
-    #     ExtAPI, Model, 
-    #     init=TIME_STEPS[0], min_t=TIME_STEPS[1], max_t=TIME_STEPS[2], cores=CORES
-    # )
-    
-    # STEP 6: Post Processing Prep
-    # print("\n>>> [6/6] 執行 Post 設定...")
-    # Post_V1.run(ExtAPI, Model)
-    
-    print("\n=== 全部設定完成，請手動點擊 Solve 或加入 Solve 指令 ===")
 
-# 執行
-try:
-    main_workflow()
+    # # --- STEP 3: Mesh Tool ---
+    # print("\n>>> [3/6] 執行 Mesh...")
+    # # 傳入：ExtAPI, Model, Transaction, SelectionManager
+    # runMesh(
+    #     ExtAPI,
+    #     model=Model,
+    #     transaction_cls=Transaction,
+    #     selection_mgr=ExtAPI.SelectionManager,
+    #     size=MESH_SIZE,
+    #     is_quad=IS_QUAD,
+    #     refine_factor=REFINE
+    # )
+
+    # # --- STEP 4: Boundary Conditions ---
+    # print("\n>>> [4/6] 執行 BC...")
+    # # 傳入：ExtAPI, Model, Transaction
+    # runBC(
+    #     ExtAPI,
+    #     model=Model,
+    #     transaction_cls=Transaction,
+    #     z_val=Z_DISP_MAG,
+    #     direction=Z_DIR_SIGN
+    # )
+
+    # # --- STEP 5: Solver Setup ---
+    # print("\n>>> [5/6] 執行 Solver 設定...")
+    # # 傳入：ExtAPI, Model
+    # runSolver(
+    #     ExtAPI,
+    #     model=Model,
+    #     init=TIME_STEPS[0],
+    #     min_t=TIME_STEPS[1],
+    #     max_t=TIME_STEPS[2],
+    #     cores=CORES
+    # )
+
+    # # --- STEP 6: Post Processing ---
+    # print("\n>>> [6/6] 執行 Post 設定...")
+    # # 傳入：ExtAPI, Model
+    # runPost(
+    #     ExtAPI, 
+    #     model=Model
+    # )
+
+    # print("\n=== 全部設定完成 ===")
+
 except Exception as e:
     import traceback
     print("流程發生錯誤:")
