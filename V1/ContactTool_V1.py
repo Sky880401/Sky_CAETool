@@ -156,9 +156,9 @@ def runContact(ext_api, model=None, transaction_cls=None,
     """
     Caller 呼叫用的便利函式
     """
-    tool = ContactTool(ext_api, model, transaction_cls,
-                       selection_type_enum, data_model_object_category, contact_type)
-    
+    tool = ContactTool(ext_api, model=model, transaction_cls=transaction_cls,
+                       selection_type_enum=selection_type_enum, data_model_object_category=data_model_object_category, contact_type_enum=contact_type)
+
     if delete_existing_groups:
         tool.clear_existing_groups()
         

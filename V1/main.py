@@ -7,6 +7,10 @@ import ZFaceSelector_V1
 reload(ZFaceSelector_V1)
 from ZFaceSelector_V1 import runZFaceSelector
 
+import ContactTool_V1
+reload(ContactTool_V1)
+from ContactTool_V1 import runContact
+
 # 由 Mechanical 主環境傳入 ExtAPI / Model / Transaction / SelectionTypeEnum
 # 這樣 worker 模組就不會再遇到：ExtAPI / Model / Transaction / SelectionTypeEnum 找不到
 runZFaceSelector(
@@ -15,4 +19,15 @@ runZFaceSelector(
     model=Model,
     transaction_cls=Transaction,
     selection_type_enum=SelectionTypeEnum
+)
+
+runContact(
+    ExtAPI,
+    model=Model,
+    transaction_cls=Transaction,
+    selection_type_enum=SelectionTypeEnum,
+    contact_type=ContactType,
+    friction_coeff=0.2,
+    delete_existing_groups=True,
+    contact_name_typo_is_conatct=False
 )
