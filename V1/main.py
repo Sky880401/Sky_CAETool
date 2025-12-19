@@ -75,8 +75,13 @@ runSolver(
     num_steps=1,
     end_time_list=[1.0],
     
+    # --- 新增：設定核心數 ---
+    cores=6,  # 在此指定要用幾個核心跑
+    
+    # --- 非線性控制 ---
     large_deflection=True,
     
+    # --- 時間步長控制 ---
     auto_time_stepping=True,
     initial_time_step=0.1,
     min_time_step=0.001,
@@ -85,9 +90,6 @@ runSolver(
     model=Model,
     transaction_cls=Transaction,
     quantity_cls=Quantity,
-
-    # --- [關鍵修正] 注入 Enums ---
-    # 從剛剛 import 的 Enums 中抓出需要的類型
     auto_time_stepping_enum=Enums.AutomaticTimeStepping,
     time_step_define_by_type_enum=Enums.TimeStepDefineByType
 )
