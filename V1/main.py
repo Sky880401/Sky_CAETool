@@ -11,6 +11,10 @@ import ContactTool_V1
 reload(ContactTool_V1)
 from ContactTool_V1 import runContact
 
+import MeshTool_V1
+reload(MeshTool_V1)
+from MeshTool_V1 import runMesh
+
 # 由 Mechanical 主環境傳入 ExtAPI / Model / Transaction / SelectionTypeEnum
 # 這樣 worker 模組就不會再遇到：ExtAPI / Model / Transaction / SelectionTypeEnum 找不到
 runZFaceSelector(
@@ -30,4 +34,18 @@ runContact(
     friction_coeff=0.2,
     delete_existing_groups=True,
     contact_name_typo_is_conatct=False
+)
+
+runMesh(
+    ExtAPI,
+    element_size=1.0,
+    is_quadratic=True,
+    do_contact_refine=True,
+    model=Model,
+    transaction_cls=Transaction,
+    selection_type_enum=SelectionTypeEnum,
+    data_model_object_category_enum=DataModelObjectCategory,
+    quantity_cls=Quantity,
+    element_order_enum=ElementOrder,
+    method_type_enum=MethodType
 )
