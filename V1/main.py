@@ -19,6 +19,11 @@ import BCTool_V1
 reload(BCTool_V1)
 from BCTool_V1 import runBC
 
+import SolverTool_V1
+reload(SolverTool_V1)
+from SolverTool_V1 import runSolver
+import Ansys.Mechanical.DataModel.Enums as Enums
+
 # 由 Mechanical 主環境傳入 ExtAPI / Model / Transaction / SelectionTypeEnum
 # 這樣 worker 模組就不會再遇到：ExtAPI / Model / Transaction / SelectionTypeEnum 找不到
 runZFaceSelector(
@@ -63,4 +68,26 @@ runBC(
     # --- 關鍵依賴注入 ---
     quantity_cls=Quantity,          # [重要] 傳入單位類別
     load_define_by_enum=LoadDefineBy # [重要] 傳入 LoadDefineBy Enum
+)
+
+runSolver(
+    ExtAPI,
+    num_steps=1,
+    end_time_list=[1.0],
+    
+    large_deflection=True,
+    
+    auto_time_stepping=True,
+    initial_time_step=0.1,
+    min_time_step=0.001,
+    max_time_step=0.2,
+    
+    model=Model,
+    transaction_cls=Transaction,
+    quantity_cls=Quantity,
+
+    # --- [關鍵修正] 注入 Enums ---
+    # 從剛剛 import 的 Enums 中抓出需要的類型
+    auto_time_stepping_enum=Enums.AutomaticTimeStepping,
+    time_step_define_by_type_enum=Enums.TimeStepDefineByType
 )
